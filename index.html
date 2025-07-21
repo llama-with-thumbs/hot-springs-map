@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Hot Springs Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #map { height: 100vh; width: 100vw; }
+    #search {
+      position: absolute;
+      top: 10px; left: 10px; z-index: 1000;
+      padding: 8px 12px; font-size: 16px; border-radius: 4px; border: 1px solid #ccc;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      width: 280px;
+    }
+  </style>
+</head>
+<body>
+  <input id="search" type="text" placeholder="Search springs by name..." />
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map').setView([39, -100], 4);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let markers = [];
+
+    fetch('hot_springs.geojson')
+      .then(response => response.json())
+      .then(data => {
+        L.geoJSON(data, {
+          pointToLayer: (feature, latlng) => {
+            const marker = L.marker(latlng);
+            const props = feature.properties || {};
+            let popupContent = `<strong>${props.name || 'Hot Spring'}</strong>`;
+            if (props.description) popupContent += `<br>${props.description}`;
+            // Show more info if available
+            Object.entries(props).forEach(([key, value]) => {
+              if (!['name', 'description'].includes(key) && value)
+                popupContent += `<br><b>${key}:</b> ${value}`;
+            });
+            marker.bindPopup(popupContent);
+            markers.push({ marker, name: (props.name || '') });
+            return marker;
+          }
+        }).addTo(map);
+      });
+
+    // Simple name filter/search
+    document.getElementById('search').addEventListener('input', function(e) {
+      const q = e.target.value.trim().toLowerCase();
+      markers.forEach(({ marker, name }) => {
+        if (!name.toLowerCase().includes(q)) {
+          marker.setOpacity(0.1);
+        } else {
+          marker.setOpacity(1);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
