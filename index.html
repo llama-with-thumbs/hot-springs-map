@@ -242,18 +242,29 @@
         let resultsHtml = "";
         let matches = [];
 
-        markerList.forEach(({ marker, name }, idx) => {
+        markerList.forEach(({ marker, name }) => {
           if (name && name.toLowerCase().includes(query) && query.length > 0) {
-            marker.setOpacity(1);
+            if (marker.setStyle) {
+              marker.setStyle({ opacity: 1, fillOpacity: 0.95 });
+            } else if (marker.setOpacity) {
+              marker.setOpacity(1);
+            }
             bounceMarker(marker);
-            marker.setZIndexOffset(1000);
-            matches.push({ marker, idx });
+            marker.setZIndexOffset && marker.setZIndexOffset(1000);
           } else if (query.length > 0) {
-            marker.setOpacity(0.1);
-            marker.setZIndexOffset(0);
+            if (marker.setStyle) {
+              marker.setStyle({ opacity: 0.2, fillOpacity: 0.15 });
+            } else if (marker.setOpacity) {
+              marker.setOpacity(0.1);
+            }
+            marker.setZIndexOffset && marker.setZIndexOffset(0);
           } else {
-            marker.setOpacity(1);
-            marker.setZIndexOffset(0);
+            if (marker.setStyle) {
+              marker.setStyle({ opacity: 1, fillOpacity: 0.95 });
+            } else if (marker.setOpacity) {
+              marker.setOpacity(1);
+            }
+            marker.setZIndexOffset && marker.setZIndexOffset(0);
           }
         });
 
