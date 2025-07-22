@@ -31,7 +31,7 @@
       }
       #map {
         position: relative;
-        height: 90vh;
+        height: 80vh;
         width: 95%;
         max-width: 1200px;
         border-radius: 20px;
@@ -45,7 +45,7 @@
         flex-direction: column;
         align-items: flex-start;
         justify-content: flex-start;
-        padding: 35px 24px 24px 18px;
+        padding: 48px 24px 24px 18px;
         box-shadow: -4px 0 16px rgba(0, 0, 0, 0.04);
         min-width: 240px;
       }
@@ -229,8 +229,13 @@
       let markerList = [];
 
       function bounceMarker(marker) {
-        marker._icon.classList.add("highlight-marker");
-        setTimeout(() => marker._icon.classList.remove("highlight-marker"), 600);
+        // Only bounce if icon is present (marker is on map)
+        if (marker._icon) {
+          marker._icon.classList.add("highlight-marker");
+          setTimeout(() => {
+            if (marker._icon) marker._icon.classList.remove("highlight-marker");
+          }, 600);
+        }
       }
 
       function doSearch() {
@@ -242,29 +247,18 @@
         let resultsHtml = "";
         let matches = [];
 
-        markerList.forEach(({ marker, name }) => {
+        markerList.forEach(({ marker, name }, idx) => {
           if (name && name.toLowerCase().includes(query) && query.length > 0) {
-            if (marker.setStyle) {
-              marker.setStyle({ opacity: 1, fillOpacity: 0.95 });
-            } else if (marker.setOpacity) {
-              marker.setOpacity(1);
-            }
+            if (!map.hasLayer(marker)) marker.addTo(map); // Show
             bounceMarker(marker);
-            marker.setZIndexOffset && marker.setZIndexOffset(1000);
+            if (marker.setZIndexOffset) marker.setZIndexOffset(1000);
+            matches.push({ marker, idx });
           } else if (query.length > 0) {
-            if (marker.setStyle) {
-              marker.setStyle({ opacity: 0.2, fillOpacity: 0.15 });
-            } else if (marker.setOpacity) {
-              marker.setOpacity(0.1);
-            }
-            marker.setZIndexOffset && marker.setZIndexOffset(0);
+            if (map.hasLayer(marker)) marker.remove(); // Hide
+            if (marker.setZIndexOffset) marker.setZIndexOffset(0);
           } else {
-            if (marker.setStyle) {
-              marker.setStyle({ opacity: 1, fillOpacity: 0.95 });
-            } else if (marker.setOpacity) {
-              marker.setOpacity(1);
-            }
-            marker.setZIndexOffset && marker.setZIndexOffset(0);
+            if (!map.hasLayer(marker)) marker.addTo(map); // Show all on reset
+            if (marker.setZIndexOffset) marker.setZIndexOffset(0);
           }
         });
 
@@ -313,11 +307,12 @@
       }
 
       function resetMapView() {
-        // Reset map view (center/zoom), reset all marker opacities and z-index
-        map.setView([39, -100], 4); // Or whatever your default is
+        map.setView([39, -100], 4);
         markerList.forEach(({ marker }) => {
-          marker.setOpacity(1);
-          marker.setZIndexOffset(0);
+          if (!map.hasLayer(marker)) marker.addTo(map); // Show all
+          if (marker.setStyle) marker.setStyle({ opacity: 1, fillOpacity: 0.95 });
+          if (marker.setOpacity) marker.setOpacity(1);
+          if (marker.setZIndexOffset) marker.setZIndexOffset(0);
         });
       }
 
@@ -354,14 +349,14 @@
           L.geoJSON(data, {
             pointToLayer: (feature, latlng) => {
               const props = feature.properties || {};
+
               const marker = L.circleMarker(latlng, {
-                radius: 4, // Size of the dot
+                radius: 4,
                 color: "#56130e", // Border color
-                fillColor: "#e03426", // Fill color (bright red)
+                fillColor: "#e03426", // Fill color
                 fillOpacity: 0.95,
                 weight: 1,
               });
-
               let popupContent = `<strong>${props["Spring Name"] || "Hot Spring"}</strong>`;
               Object.entries(props).forEach(([key, value]) => {
                 if (key !== "Spring Name" && value && value !== "null") popupContent += `<br><b>${key}:</b> ${value}`;
