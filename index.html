@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>Hot Spring Finder</title>
-    
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -36,8 +36,21 @@
           <button id="search-btn" type="button">Search</button>
         </div>
         <div id="search-results" style="margin-top: 18px; width: 100%"></div>
+        <div
+          class="github-link-container"
+          style="margin-top: auto; width: 100%; text-align: center; padding-bottom: 16px">
+          <a
+            href="https://github.com/llama-with-thumbs/hot-springs-map#readme"
+            target="_blank"
+            rel="noopener"
+            style="font-size: 0.9em; color: #365dc6; text-decoration: none; display: inline-flex; align-items: center">
+            <img src="github-mark.png" alt="GitHub Logo" style="width: 16px; height: 16px; margin-right: 6px" />
+            Project on GitHub
+          </a>
+        </div>
       </aside>
     </div>
+
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
       const map = L.map("map").setView([39, -100], 4);
