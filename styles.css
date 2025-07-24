@@ -130,19 +130,62 @@ html, body {
   color: #365dc6;
 }
 @media (max-width: 900px) {
-  .container { flex-direction: column; }
-  .map-section, .search-section { width: 100%; max-width: 100vw;}
-  #map { width: 100vw; height: 48vh; max-width: 100vw;}
-  .search-section { min-width: 0; padding: 24px 12px;}
-  .search-row { flex-direction: column; gap: 8px;}
-  #search-btn { width: 100%; }
-  #search-clear { right: 18px; }
+  .container {
+    flex-direction: column;
+  }
+
+  /* Map fills the viewport width */
+  .map-section {
+    width: 100vw;
+    max-width: 100vw;
+  }
+  #map {
+    width: 100vw;
+    height: 48vh;
+    max-width: 100vw;
+  }
+
+  /* Sidebar uses flex sizing, not fixed width */
+  .search-section {
+    flex: 1 1 auto;
+    min-width: 0;               /* allow it to shrink */
+    padding: 24px 12px;
+    box-sizing: border-box;     /* include padding in width */
+  }
+
+  /* Legend stacks below map */
   .map-legend {
     position: static;
     max-width: 99vw;
     margin: 10px auto 0 auto;
-    left: 0;
-    right: 0;
     font-size: 0.93em;
   }
+
+  /* Keep search row on one line */
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .search-row #search {
+    flex: 1 1 auto;
+    min-width: 0;               /* prevent overflow */
+  }
+
+  /* Clear “×” button at its desktop spot */
+  #search-clear {
+    right: 98px;
+    display: block;
+  }
+
+  /* Search button only as wide as its content */
+  #search-btn {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 8px 12px;
+    font-size: 0.95em;
+    white-space: nowrap;
+  }
 }
+
+
