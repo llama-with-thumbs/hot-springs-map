@@ -33,7 +33,7 @@ html, body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  padding: 35px 24px 24px 18px;
+  padding: 35px 24px 0px 18px;
   box-shadow: -4px 0 16px rgba(0,0,0,0.04);
   min-width: 240px;
 }
@@ -109,26 +109,53 @@ html, body {
   position: absolute;
   bottom: 18px;
   left: 18px;
+  width: 240px;
   background: rgba(255,255,255,0.96);
-  border: 1.5px solid #b5bdd6;
-  border-radius: 12px;
-  padding: 10px 12px 8px 12px;
-  box-shadow: 0 4px 14px rgba(80,90,150,0.09);
-  font-size: 0.82em;
-  min-width: 170px;
-  max-width: 235px;
+  border: 1px solid #b5bdd6;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 400px;             /* big enough for full content */
+  transition: max-height 0.3s ease;
   z-index: 1200;
-  color: #1e2335;
-  line-height: 1.32;
-  pointer-events: auto;
 }
-.map-legend h4 {
-  margin: 0 0 5px 0;
-  font-size: 1em;
+
+/* When collapsed, clamp to header height */
+.map-legend.collapsed {
+  max-height: 36px;              /* roughly header height */
+}
+
+/* Header row (always visible) */
+.legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  padding: 0 8px;
+  background: rgba(230,230,250,0.3);
+}
+
+/* Title text */
+.legend-title {
   font-weight: 700;
-  letter-spacing: 1px;
   color: #365dc6;
 }
+
+/* Toggle arrow */
+.legend-toggle {
+  cursor: pointer;
+  font-size: 1em;
+  user-select: none;
+  transition: transform 0.3s ease;
+}
+
+/* Content area */
+.legend-content {
+  padding: 8px 12px 12px;
+  font-size: 0.82em;
+  line-height: 1.4;
+  color: #1e2335;
+}
+
 @media (max-width: 900px) {
   .container {
     flex-direction: column;
@@ -149,7 +176,7 @@ html, body {
   .search-section {
     flex: 1 1 auto;
     min-width: 0;               /* allow it to shrink */
-    padding: 24px 12px;
+    padding: 24px 24px 12px 12px;
     box-sizing: border-box;     /* include padding in width */
   }
 

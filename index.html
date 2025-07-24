@@ -15,16 +15,22 @@
     <div class="container">
       <div class="map-section">
         <div id="map">
-          <div id="legend" class="map-legend">
-            <h4>Legend</h4>
-            <div><b>SC</b>: State Code</div>
-            <div><b>TF</b>: Max surface temp (°F, B=boiling, H=hot, W=warm)</div>
-            <div><b>TC</b>: Max surface temp (°C, B=boiling, H=hot, W=warm)</div>
-            <div><b>P.P. 492</b>: USGS Prof. Paper 492 (Waring, 1965)</div>
-            <div><b>Circ. 790</b>: USGS Circular 790 (Muffler, 1979)</div>
-            <div><b>NOAA</b>: 1:250,000 overlays in NOAA KGRD 12 (Berry, Grim, Ikelman, 1980)</div>
-            <div><b>AMS</b>: 1:250,000 AMS Maps</div>
-            <div><b>USGS quadrangle</b>: 15 or 7.5-min quadrangle location</div>
+          <div id="legend" class="map-legend collapsed">
+            <div class="legend-header">
+              <span class="legend-title">Legend</span>
+              <span id="legend-toggle" class="legend-toggle">▲</span>
+            </div>
+            <div class="legend-content">
+              <!-- your legend items here -->
+              <div><b>SC</b>: State Code</div>
+              <div><b>TF</b>: Max surface temp (°F; B=boiling, H=hot, W=warm)</div>
+              <div><b>TC</b>: Max surface temp (°C; B=boiling, H=hot, W=warm)</div>
+              <div><b>P.P. 492</b>: USGS Prof. Paper 492 (Waring, 1965)</div>
+              <div><b>Circ. 790</b>: USGS Circular 790 (Muffler, 1979)</div>
+              <div><b>NOAA</b>: NOAA KGRD 12 overlays (1980)</div>
+              <div><b>AMS</b>: 1:250,000 AMS Maps</div>
+              <div><b>USGS quadrangle</b>: 15‑ or 7.5‑minute quad</div>
+            </div>
           </div>
         </div>
       </div>
@@ -35,10 +41,10 @@
           <button id="search-clear" title="Clear search" tabindex="-1">&times;</button>
           <button id="search-btn" type="button">Search</button>
         </div>
-        <div id="search-results" style="margin-top: 18px; width: 100%"></div>
+        <div id="search-results" style="margin-top: 18px; width: 100%; flex: 1 1 auto; overflow-y: auto"></div>
         <div
           class="github-link-container"
-          style="margin-top: auto; width: 100%; text-align: center; padding-bottom: 16px">
+          style="margin-top: auto; width: 100%; text-align: center; padding-bottom: 8px">
           <a
             href="https://github.com/llama-with-thumbs/hot-springs-map#readme"
             target="_blank"
@@ -54,29 +60,27 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
       // 1) Define two base‐layers
-const streetLayer = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  { attribution: "&copy; OpenStreetMap contributors" }
-);
-const satelliteLayer = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/" +
-    "World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  { attribution: "Tiles &copy; Esri &mdash; Source: Esri, NASA, USGS" }
-);
+      const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      });
+      const satelliteLayer = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/" + "World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "Tiles &copy; Esri &mdash; Source: Esri, NASA, USGS" }
+      );
 
-// 2) Initialize the map with the Street layer
-const map = L.map("map", {
-  center: [39, -100],
-  zoom: 4,
-  layers: [streetLayer]  // default
-});
+      // 2) Initialize the map with the Street layer
+      const map = L.map("map", {
+        center: [39, -100],
+        zoom: 4,
+        layers: [streetLayer], // default
+      });
 
-// 3) Add a control to switch between Street/Satellite
-const baseMaps = {
-  "Street": streetLayer,
-  "Satellite": satelliteLayer
-};
-L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
+      // 3) Add a control to switch between Street/Satellite
+      const baseMaps = {
+        Street: streetLayer,
+        Satellite: satelliteLayer,
+      };
+      L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
 
       let markerList = [];
 
@@ -89,65 +93,69 @@ L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
           }, 600);
         }
       }
-
       function doSearch() {
         const query = document.getElementById("search").value.trim().toLowerCase();
-        if (!query) {
-          resetMapView();
-        }
         const resultsDiv = document.getElementById("search-results");
         let resultsHtml = "";
         let matches = [];
 
-        markerList.forEach(({ marker, name }, idx) => {
-          if (name && name.toLowerCase().includes(query) && query.length > 0) {
-            if (!map.hasLayer(marker)) marker.addTo(map); // Show
+        // 1) Show/hide markers based on query
+        markerList.forEach(({ marker, name }) => {
+          const isMatch = name && name.toLowerCase().includes(query) && query;
+          if (isMatch) {
+            if (!map.hasLayer(marker)) marker.addTo(map);
             bounceMarker(marker);
-            if (marker.setZIndexOffset) marker.setZIndexOffset(1000);
-            matches.push({ marker, idx });
-          } else if (query.length > 0) {
-            if (map.hasLayer(marker)) marker.remove(); // Hide
-            if (marker.setZIndexOffset) marker.setZIndexOffset(0);
+            marker.setZIndexOffset && marker.setZIndexOffset(1000);
+            matches.push(marker);
           } else {
-            if (!map.hasLayer(marker)) marker.addTo(map); // Show all on reset
-            if (marker.setZIndexOffset) marker.setZIndexOffset(0);
+            if (map.hasLayer(marker)) marker.remove();
+            marker.setZIndexOffset && marker.setZIndexOffset(0);
           }
         });
 
-        // Show up to 5 results
-        if (query.length === 0 || matches.length === 0) {
-          resultsHtml = matches.length === 0 && query.length > 0 ? "<div>No matches found.</div>" : "";
+        // 2) Build results list
+        if (!query) {
+          resultsHtml = "";
+          resetMapView();
+        } else if (matches.length === 0) {
+          resultsHtml = "<div>No matches found.</div>";
         } else {
           resultsHtml = "<ul style='list-style:none;padding:0;margin:0;'>";
-          matches.slice(0, 5).forEach(({ marker }, i) => {
+          matches.slice(0, 5).forEach((marker) => {
             const props = marker.feature.properties;
+            // Title + link
             resultsHtml += `
-        <li style="margin-bottom:14px;">
-          <a href="#" style="font-weight:600;font-size:1.05em;color:#255bbd;text-decoration:none;" onclick="focusSpring(${
-            marker._leaflet_id
-          });return false;">
+        <li style="margin-bottom:16px;">
+          <a href="#" style="font-weight:600;font-size:1.05em;color:#255bbd;text-decoration:none;"
+             onclick="focusSpring(${marker._leaflet_id});return false;">
             ${props["Spring Name"] || "Hot Spring"}
           </a>
-          <div style="color:#444;font-size:0.95em;">
-            ${props.SC ? props.SC + ", " : ""}${props["USGS Quadrangle"] ? props["USGS Quadrangle"] : ""}
-            ${props.TF ? `<span style="color:#666;">, ${props.TF}°F</span>` : ""}
-          </div>
-        </li>
+          <div style="font-size:0.9em;color:#444;margin-top:4px;">
       `;
+            // Dynamically list every property except the name itself
+            Object.entries(props).forEach(([key, val]) => {
+              if (key === "Spring Name") return;
+              const display = val && val !== "null" ? val : "No data";
+              resultsHtml += `<div><b>${key}</b>: ${display}</div>`;
+            });
+            resultsHtml += `</div></li>`;
           });
           resultsHtml += "</ul>";
           if (matches.length > 5) {
-            resultsHtml += `<div style="color:#888;font-size:0.97em;">${matches.length - 5} more found...</div>`;
+            resultsHtml += `<div style="font-size:0.85em;color:#666;margin-top:8px;">
+                        + ${matches.length - 5} more results
+                      </div>`;
           }
         }
+
         resultsDiv.innerHTML = resultsHtml;
 
-        // Scroll to results if on mobile
-        if (window.innerWidth < 900) {
+        // 3) Mobile scroll into view
+        if (window.innerWidth < 900 && query) {
           resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
-        // Helper: Clicking result opens marker popup and centers map
+        // 4) focusSpring helper
         window.focusSpring = function (leafletId) {
           const found = markerList.find(({ marker }) => marker._leaflet_id === leafletId);
           if (found) {
@@ -210,9 +218,17 @@ L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
                 weight: 1,
               });
               let popupContent = `<strong>${props["Spring Name"] || "Hot Spring"}</strong>`;
-              Object.entries(props).forEach(([key, value]) => {
-                if (key !== "Spring Name" && value && value !== "null") popupContent += `<br><b>${key}:</b> ${value}`;
+              // Define which fields to skip entirely:
+              const exclude = ["P.P. 492", "NOAA", "AMS", "USGS Quadrangle", "Circ. 790"];
+
+              // Iterate every property, even if null, substituting a default:
+              Object.keys(props).forEach((key) => {
+                if (key === "Spring Name" || exclude.includes(key)) return;
+                let val = props[key];
+                if (!val || val === "null") val = "Information not available";
+                popupContent += `<br><b>${key}:</b> ${val}`;
               });
+
               marker.bindPopup(popupContent);
               marker.addTo(map);
               markerList.push({ marker, name: props["Spring Name"] || "" });
@@ -220,6 +236,18 @@ L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
             },
           });
         });
+      const legend = document.getElementById("legend");
+      const toggle = document.getElementById("legend-toggle");
+
+      // Set initial arrow direction (expanded = ▲)
+      toggle.textContent = "▲";
+
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const nowCollapsed = legend.classList.toggle("collapsed");
+        // Swap arrow: ▲ for expanded, ▼ for collapsed
+        toggle.textContent = nowCollapsed ? "▼" : "▲";
+      });
     </script>
   </body>
 </html>
