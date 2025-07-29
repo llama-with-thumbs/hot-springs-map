@@ -156,19 +156,30 @@ fetch("hot_springs.geojson")
           fillOpacity: 0.95,
           weight: 1,
         });
-        let popupContent = `<strong>${props["Spring Name"] || "Hot Spring"}</strong>`;
-        // Define which fields to skip entirely:
-        const exclude = ["P.P. 492", "NOAA", "AMS", "USGS Quadrangle", "Circ. 790"];
+        // 1) Mapping for renamed fields
+        const labelMap = {
+          SC: "State",
+          TF: "Temperature (°F)",
+          TC: "Temperature (°C)",
+        };
 
-        // Iterate every property, even if null, substituting a default:
-        Object.keys(props).forEach((key) => {
+        // 2) Build popup
+        let popupContent = `<strong>${props["Spring Name"] || "Hot Spring"}</strong>`;
+
+        // 3) Skip unwanted keys
+        const exclude = ["P.P. 492", "Circ. 790", "NOAA  "];
+
+        Object.entries(props).forEach(([key, raw]) => {
           if (key === "Spring Name" || exclude.includes(key)) return;
-          let val = props[key];
-          if (!val || val === "null") val = "Information not available";
-          popupContent += `<br><b>${key}:</b> ${val}`;
+
+          const val = raw && raw !== "null" ? raw : "Information not available";
+          const label = labelMap[key] || key;
+
+          popupContent += `<br><b>${label}:</b> ${val}`;
         });
 
         marker.bindPopup(popupContent);
+
         marker.addTo(map);
         markerList.push({ marker, name: props["Spring Name"] || "" });
         return marker;
@@ -178,33 +189,39 @@ fetch("hot_springs.geojson")
 const legend = document.getElementById("legend");
 const toggle = document.getElementById("legend-toggle");
 
-// Set initial arrow direction (expanded = ▲)
-toggle.textContent = "▲";
-
+// 2) Toggle on click
 toggle.addEventListener("click", (e) => {
   e.stopPropagation();
-  const nowCollapsed = legend.classList.toggle("collapsed");
-  // Swap arrow: ▲ for expanded, ▼ for collapsed
-  toggle.textContent = nowCollapsed ? "▼" : "▲";
+  const isCollapsed = legend.classList.toggle("collapsed");
 });
 
 document.getElementById("temp-reset-btn").addEventListener("click", () => {
-  // Reset unit to TF
+  // 1) Force °F radio back on
   document.querySelector('input[name="temp-unit"][value="TF"]').checked = true;
 
-  sliderInstance.reset();
+  // 2) Update the slider back to 32–212 °F
+  sliderInstance.update({
+    min: 32,
+    max: 212,
+    from: 32,
+    to: 212,
+    postfix: " °F",
+    grid: true, // keep the grid if you like
+  });
 
-  // Uncheck all codes
-  document.querySelectorAll('input[name="temp-code"]').forEach((cb) => (cb.checked = false));
+  // 3) Update the label
+  updateDisplay(sliderInstance.result);
 
-  // Show all markers again
+  // 4) Re‑check W/H/B
+  document.querySelectorAll('input[name="temp-code"]').forEach((cb) => (cb.checked = true));
+
+  // 5) Show all markers & reset map
   markerList.forEach(({ marker }) => {
     if (!map.hasLayer(marker)) marker.addTo(map);
   });
-
-  // Reset map view
   resetMapView();
 });
+
 // grab the display span
 const rangeDisplay = document.getElementById("temp-range-display");
 

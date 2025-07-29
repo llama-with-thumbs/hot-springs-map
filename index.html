@@ -20,10 +20,9 @@
           <div id="legend" class="map-legend collapsed">
             <div class="legend-header">
               <span class="legend-title">Legend</span>
-              <span id="legend-toggle" class="legend-toggle">▲</span>
+              <span id="legend-toggle" class="legend-toggle">▶</span>
             </div>
             <div class="legend-content">
-              <!-- your legend items here -->
               <div><b>SC</b>: State Code</div>
               <div><b>TF</b>: Max surface temp (°F; B=boiling, H=hot, W=warm)</div>
               <div><b>TC</b>: Max surface temp (°C; B=boiling, H=hot, W=warm)</div>
@@ -44,36 +43,42 @@
           <button id="search-btn" type="button">Search</button>
         </div>
 
-        <div id="search-results" style="margin-top: 18px; width: 100%; flex: 1 1 auto; overflow-y: auto; background-color: #e9eef6;"></div>
+        <div id="search-results"></div>
 
         <!-- Temperature filter -->
         <div class="temp-filter">
-          <div><strong>Filter by Temperature</strong></div>
+          <!-- inside .temp-filter -->
+          <div class="temp-filter">
+            <div class="temp-filter-heading">
+              <strong>Filter by Temperature</strong>
+            </div>
 
-          <!-- Unit selector -->
-          <div class="unit-selector">
-            <label><input type="radio" name="temp-unit" value="TF" checked /> °F</label>
-            <label><input type="radio" name="temp-unit" value="TC" /> °C</label>
-          </div>
+            <!-- Row 1: unit selectors + WHB codes -->
+            <div class="unit-codes-row">
+              <div class="unit-selector">
+                <label><input type="radio" name="temp-unit" value="TF" checked /> °F</label>
+                <label><input type="radio" name="temp-unit" value="TC" /> °C</label>
+              </div>
+              <div class="codes-selector">
+                <label><input type="checkbox" name="temp-code" value="W" checked /> Warm</label>
+                <label><input type="checkbox" name="temp-code" value="H" checked /> Hot</label>
+                <label><input type="checkbox" name="temp-code" value="B" checked /> Boiling</label>
+              </div>
+            </div>
 
-          <!-- Slider + display -->
-          <div class="slider-wrapper">
-            <input id="temp-slider" type="text" name="temp-range" />
+            <!-- Row 2: slider + reset -->
+            <div class="slider-reset-row">
+              <div class="slider-wrapper">
+                <input id="temp-slider" type="text" name="temp-range" />
+              </div>
+              <div class="actions">
+                <button id="temp-reset-btn" type="button">Reset</button>
+              </div>
+            </div>
+
+            <!-- Below: range label -->
             <div class="slider-label">Selected: <span id="temp-range-display"></span></div>
           </div>
-
-          <!-- Non‑numeric codes -->
-          <div class="codes-selector">
-            <label><input type="checkbox" name="temp-code" value="W" checked /> W</label>
-            <label><input type="checkbox" name="temp-code" value="H" checked /> H</label>
-            <label><input type="checkbox" name="temp-code" value="B" checked /> B</label>
-          </div>
-
-          <!-- Reset button only -->
-          <div class="actions">
-            <button id="temp-reset-btn" type="button">Reset</button>
-          </div>
-          
         </div>
 
         <!-- GitHub link -->
