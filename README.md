@@ -40,5 +40,15 @@ An interactive, browser‑based map of hot springs in the U.S., rebuilt from the
 - **GitHub Pages** for hosting  
 
 ---
+## Getting Started
 
+### Clone & Serve Locally
+
+```bash
+git clone https://github.com/llama-with-thumbs/hot-springs-map.git
+cd hot-springs-map
+# with Python 3:
+python3 -m http.server 8000
+# or, with Node:
+npx http-server .
 

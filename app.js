@@ -33,20 +33,22 @@ function bounceMarker(marker) {
   }
 }
 function doSearch() {
-  const query = document.getElementById("search").value.trim().toLowerCase();
-  const resultsDiv = document.getElementById("search-results");
-  let resultsHtml = "";
-  let matches = [];
+  // 1) grab & normalize
+  const raw = document.getElementById("search").value.trim();
+  const query = raw.toLowerCase();
 
-  // 1) Show/hide markers based on query
+  // 2) for each marker, compare against its name in lowercase
   markerList.forEach(({ marker, name }) => {
-    const isMatch = name && name.toLowerCase().includes(query) && query;
+    const springName = (name || "").toLowerCase();
+    const isMatch = query && springName.includes(query);
+
     if (isMatch) {
+      // show + highlight
       if (!map.hasLayer(marker)) marker.addTo(map);
       bounceMarker(marker);
       marker.setZIndexOffset && marker.setZIndexOffset(1000);
-      matches.push(marker);
     } else {
+      // hide non‑matches
       if (map.hasLayer(marker)) marker.remove();
       marker.setZIndexOffset && marker.setZIndexOffset(0);
     }
