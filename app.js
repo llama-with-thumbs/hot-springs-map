@@ -246,7 +246,9 @@ const sliderInstance = $("#temp-slider").data("ionRangeSlider");
 
 // update the “Selected” text
 function updateDisplay(data) {
-  rangeDisplay.textContent = `${data.from}–${data.to} °C`;
+  const unit = document.querySelector('input[name="temp-unit"]:checked').value;
+  const symbol = unit === "TC" ? "°C" : "°F";
+  rangeDisplay.textContent = `${data.from}–${data.to} ${symbol}`;
 }
 
 // your apply logic, using the two values and current unit
@@ -271,22 +273,29 @@ function applyTempFilter(data) {
   });
 }
 
-document.querySelectorAll('input[name="temp-unit"]').forEach((radio) =>
+document.querySelectorAll('input[name="temp-unit"]').forEach((radio) => {
   radio.addEventListener("change", () => {
     const isC = radio.value === "TC" && radio.checked;
+    const { from: curFrom, to: curTo } = sliderInstance.result;
+
+    // compute new handle positions
+    const newFrom = isC ? Math.round(((curFrom - 32) * 5) / 9) : Math.round((curFrom * 9) / 5 + 32);
+    const newTo = isC ? Math.round(((curTo - 32) * 5) / 9) : Math.round((curTo * 9) / 5 + 32);
+
+    // update slider bounds & handles
     sliderInstance.update({
       min: isC ? 0 : 32,
       max: isC ? 100 : 212,
-      from: isC
-        ? Math.round(((sliderInstance.result.from - 32) * 5) / 9)
-        : Math.round((sliderInstance.result.from * 9) / 5 + 32),
-      to: isC
-        ? Math.round(((sliderInstance.result.to - 32) * 5) / 9)
-        : Math.round((sliderInstance.result.to * 9) / 5 + 32),
+      from: newFrom,
+      to: newTo,
       postfix: isC ? " °C" : " °F",
     });
-  })
-);
+
+    // refresh label and re‑filter
+    updateDisplay(sliderInstance.result);
+    applyTempFilter(sliderInstance.result);
+  });
+});
 
 // whenever a code checkbox toggles, re-run applyTempFilter with current slider values
 document.querySelectorAll('input[name="temp-code"]').forEach((cb) =>
