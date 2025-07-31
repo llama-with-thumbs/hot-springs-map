@@ -33,28 +33,28 @@ function bounceMarker(marker) {
   }
 }
 function doSearch() {
-  // 1) grab & normalize
-  const raw = document.getElementById("search").value.trim();
-  const query = raw.toLowerCase();
+  const query = document.getElementById("search")
+    .value.trim()
+    .toLowerCase();
+  const resultsDiv = document.getElementById("search-results");
+  let resultsHtml = "";
+  let matches = [];              // ← this line is critical!
 
-  // 2) for each marker, compare against its name in lowercase
+  // Show/hide markers and collect matches
   markerList.forEach(({ marker, name }) => {
-    const springName = (name || "").toLowerCase();
-    const isMatch = query && springName.includes(query);
-
+    const isMatch = name && name.toLowerCase().includes(query) && query;
     if (isMatch) {
-      // show + highlight
       if (!map.hasLayer(marker)) marker.addTo(map);
       bounceMarker(marker);
       marker.setZIndexOffset && marker.setZIndexOffset(1000);
+      matches.push(marker);
     } else {
-      // hide non‑matches
       if (map.hasLayer(marker)) marker.remove();
       marker.setZIndexOffset && marker.setZIndexOffset(0);
     }
   });
 
-  // 2) Build results list
+  // Build sidebar
   if (!query) {
     resultsHtml = "";
     resetMapView();
@@ -62,22 +62,21 @@ function doSearch() {
     resultsHtml = "<div>No matches found.</div>";
   } else {
     resultsHtml = "<ul style='list-style:none;padding:0;margin:0;'>";
-    matches.slice(0, 5).forEach((marker) => {
+    matches.slice(0, 5).forEach(marker => {
       const props = marker.feature.properties;
-      // Title + link
       resultsHtml += `
         <li style="margin-bottom:16px;">
-          <a href="#" style="font-weight:600;font-size:1.05em;color:#255bbd;text-decoration:none;"
+          <a href="#"
+             style="font-weight:600;font-size:1.05em;color:#255bbd;text-decoration:none;"
              onclick="focusSpring(${marker._leaflet_id});return false;">
             ${props["Spring Name"] || "Hot Spring"}
           </a>
           <div style="font-size:0.9em;color:#444;margin-top:4px;">
       `;
-      // Dynamically list every property except the name itself
       Object.entries(props).forEach(([key, val]) => {
         if (key === "Spring Name") return;
         const display = val && val !== "null" ? val : "No data";
-        resultsHtml += `<div><b>${key}</b>: ${display}</div>`;
+        resultsHtml += `<div><b>${key}:</b> ${display}</div>`;
       });
       resultsHtml += `</div></li>`;
     });
@@ -91,14 +90,12 @@ function doSearch() {
 
   resultsDiv.innerHTML = resultsHtml;
 
-  // 3) Mobile scroll into view
   if (window.innerWidth < 900 && query) {
     resultsDiv.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  // 4) focusSpring helper
-  window.focusSpring = function (leafletId) {
-    const found = markerList.find(({ marker }) => marker._leaflet_id === leafletId);
+  window.focusSpring = leafletId => {
+    const found = markerList.find(m => m.marker._leaflet_id === leafletId);
     if (found) {
       map.setView(found.marker.getLatLng(), 11, { animate: true });
       found.marker.openPopup();
@@ -106,6 +103,7 @@ function doSearch() {
     }
   };
 }
+
 
 function resetMapView() {
   map.setView([39, -100], 4);
@@ -305,22 +303,4 @@ document.querySelectorAll('input[name="temp-code"]').forEach((cb) =>
   })
 );
 
-document.getElementById("temp-reset-btn").addEventListener("click", () => {
-  // 1) Reset the slider to its original from/to
-  sliderInstance.reset();
 
-  // 2) Update the displayed range text
-  updateDisplay(sliderInstance.result);
-
-  // 3) Re‑check all W/H/B checkboxes
-  document.querySelectorAll('input[name="temp-code"]').forEach((cb) => (cb.checked = true));
-
-  // 4) Re‑apply the filter (this will now show all markers in the full range)
-  applyTempFilter({
-    from: sliderInstance.result.from,
-    to: sliderInstance.result.to,
-  });
-
-  // 5) Reset the map view/zoom if you like
-  resetMapView();
-});

@@ -39,58 +39,42 @@
         <label id="search-label" for="search">Search springs by name</label>
         <div class="search-row">
           <input id="search" type="text" placeholder="Type a spring name…" autocomplete="off" />
-          <button id="search-clear" title="Clear search" tabindex="-1">&times;</button>
+          <button id="search-clear" title="Clear search" tabindex="-1">×</button>
           <button id="search-btn" type="button">Search</button>
         </div>
-
         <div id="search-results"></div>
-
-        <!-- Temperature filter -->
         <div class="temp-filter">
-          <!-- inside .temp-filter -->
-          <div class="temp-filter">
-            <div class="temp-filter-heading">
-              <strong>Filter by Temperature</strong>
-            </div>
-
-            <!-- Row 1: unit selectors + WHB codes -->
-            <div class="unit-codes-row">
-              <div class="unit-selector">
-                <label><input type="radio" name="temp-unit" value="TF" checked /> °F</label>
-                <label><input type="radio" name="temp-unit" value="TC" /> °C</label>
-              </div>
-              <div class="codes-selector">
-                <label><input type="checkbox" name="temp-code" value="W" checked /> Warm</label>
-                <label><input type="checkbox" name="temp-code" value="H" checked /> Hot</label>
-                <label><input type="checkbox" name="temp-code" value="B" checked /> Boiling</label>
-              </div>
-            </div>
-
-            <!-- Row 2: slider + reset -->
-            <div class="slider-reset-row">
-              <div class="slider-wrapper">
-                <input id="temp-slider" type="text" name="temp-range" />
-              </div>
-              <div class="actions">
-                <button id="temp-reset-btn" type="button">Reset</button>
-              </div>
-            </div>
-
-            <!-- Below: range label -->
-            <div class="slider-label">Selected: <span id="temp-range-display"></span></div>
+          <div class="temp-filter-heading">
+            <strong>Filter by Temperature</strong>
           </div>
+          <div class="unit-codes-row">
+            <div class="unit-selector">
+              <label><input type="radio" name="temp-unit" value="TF" checked /> °F</label>
+              <label><input type="radio" name="temp-unit" value="TC" /> °C</label>
+            </div>
+            <div class="codes-selector">
+              <label><input type="checkbox" name="temp-code" value="W" checked /> Warm</label>
+              <label><input type="checkbox" name="temp-code" value="H" checked /> Hot</label>
+              <label><input type="checkbox" name="temp-code" value="B" checked /> Boiling</label>
+            </div>
+          </div>
+          <div class="slider-reset-row">
+            <div class="slider-wrapper">
+              <input id="temp-slider" type="text" name="temp-range" />
+            </div>
+            <div class="actions">
+              <button id="temp-reset-btn" type="button">Reset</button>
+            </div>
+          </div>
+          <div class="slider-label">Selected: <span id="temp-range-display"></span></div>
         </div>
-
-        <!-- GitHub link -->
-        <div
-          class="github-link-container"
-          style="margin-top: auto; width: 100%; text-align: center; padding-bottom: 8px">
+        <div class="github-link-container">
           <a
+            class="github-link"
             href="https://github.com/llama-with-thumbs/hot-springs-map#readme"
             target="_blank"
-            rel="noopener"
-            style="font-size: 0.9em; color: #365dc6; text-decoration: none; display: inline-flex; align-items: center">
-            <img src="github-mark.png" alt="GitHub Logo" style="width: 16px; height: 16px; margin-right: 6px" />
+            rel="noopener">
+            <img src="github-mark.png" alt="GitHub Logo" />
             Project on GitHub
           </a>
         </div>
