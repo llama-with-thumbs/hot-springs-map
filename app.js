@@ -44,8 +44,8 @@ var geolocate = new maplibregl.GeolocateControl({
 });
 map.addControl(geolocate, "top-left");
 
-// Auto-trigger location on load (asks permission, shows dot without zooming)
-map.on("load", function () {
+// Auto-trigger location once map is idle (asks permission, shows dot without zooming)
+map.once("idle", function () {
   geolocate.trigger();
 });
 
@@ -112,9 +112,9 @@ function buildPopupHTML(props) {
   return html;
 }
 
-// Add hot springs layer (called after each style load)
+// Add hot springs layer
 function addHotSpringsLayer() {
-  if (!geojsonData || !map.isStyleLoaded()) return;
+  if (!geojsonData) return;
   if (map.getSource("hot-springs")) return;
 
   map.addSource("hot-springs", { type: "geojson", data: geojsonData });
@@ -136,8 +136,23 @@ function addHotSpringsLayer() {
   }
 }
 
-// Re-add layer when style changes (e.g. Street <-> Satellite)
-map.on("style.load", addHotSpringsLayer);
+// Initial load: fetch GeoJSON then add layer (style is guaranteed ready)
+map.on("load", function () {
+  fetch("hot_springs.geojson")
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      geojsonData = data;
+      allFeatures = data.features;
+      addHotSpringsLayer();
+    });
+});
+
+// Re-add layer after style switch (Street <-> Satellite)
+map.on("styledata", function () {
+  if (geojsonData && !map.getSource("hot-springs")) {
+    try { addHotSpringsLayer(); } catch (e) { /* style not fully ready yet */ }
+  }
+});
 
 // Click on spring -> popup
 map.on("click", "hot-springs", function (e) {
@@ -158,15 +173,6 @@ map.on("mouseenter", "hot-springs", function () {
 map.on("mouseleave", "hot-springs", function () {
   map.getCanvas().style.cursor = "";
 });
-
-// Fetch GeoJSON
-fetch("hot_springs.geojson")
-  .then(function (r) { return r.json(); })
-  .then(function (data) {
-    geojsonData = data;
-    allFeatures = data.features;
-    addHotSpringsLayer();
-  });
 
 // === Filter helpers ===
 function setMapFilter(filter) {
