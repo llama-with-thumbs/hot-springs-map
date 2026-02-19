@@ -37,6 +37,64 @@ const baseMaps = {
 };
 L.control.layers(baseMaps, null, { position: "topright" }).addTo(map);
 
+// Geolocation control
+const LocateControl = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd: function () {
+    const btn = L.DomUtil.create("div", "leaflet-bar leaflet-control locate-btn");
+    btn.innerHTML = "&#9737;";
+    btn.title = "Show my location";
+    btn.setAttribute("role", "button");
+    btn.setAttribute("aria-label", "Show my location");
+    L.DomEvent.disableClickPropagation(btn);
+    btn.addEventListener("click", locateUser);
+    return btn;
+  },
+});
+new LocateControl().addTo(map);
+
+let userLocMarker = null;
+let userLocCircle = null;
+
+function locateUser() {
+  if (!navigator.geolocation) return alert("Geolocation is not supported by your browser.");
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const acc = pos.coords.accuracy;
+      const latlng = [lat, lng];
+
+      if (userLocMarker) {
+        userLocMarker.setLatLng(latlng);
+        userLocCircle.setLatLng(latlng).setRadius(acc);
+      } else {
+        userLocMarker = L.circleMarker(latlng, {
+          radius: 8,
+          color: "#fff",
+          fillColor: "#2a7fff",
+          fillOpacity: 1,
+          weight: 2,
+          className: "user-loc-pulse",
+        }).addTo(map).bindPopup("You are here");
+        userLocCircle = L.circle(latlng, {
+          radius: acc,
+          color: "#2a7fff",
+          fillColor: "#2a7fff",
+          fillOpacity: 0.1,
+          weight: 1,
+        }).addTo(map);
+      }
+
+      map.setView(latlng, 10, { animate: true });
+    },
+    (err) => {
+      alert("Could not get your location: " + err.message);
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
 let markerList = [];
 
 function bounceMarker(marker) {

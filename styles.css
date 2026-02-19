@@ -342,6 +342,37 @@ body {
   margin-right: 6px;
 }
 
+/* Locate button */
+.locate-btn {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  text-align: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  background: #fff;
+  color: #333;
+}
+.locate-btn:hover {
+  background: #f4f4f4;
+}
+body.dark .locate-btn {
+  background: #2a2a4a;
+  color: #e0e0e0;
+}
+body.dark .locate-btn:hover {
+  background: #3a3a5c;
+}
+
+/* User location pulse */
+.user-loc-pulse {
+  animation: loc-pulse 1.5s ease-out infinite;
+}
+@keyframes loc-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(42, 127, 255, 0.5); }
+  100% { box-shadow: 0 0 0 12px rgba(42, 127, 255, 0); }
+}
+
 /* Dark theme overrides for third-party components */
 
 /* Leaflet popups */
