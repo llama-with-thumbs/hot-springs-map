@@ -119,8 +119,63 @@ function buildPopupHTML(props) {
   return html;
 }
 
-// Add hot springs layer
-function addHotSpringsLayer() {
+// Grey overlay: world polygon with US cut out
+var nonUsOverlay = {
+  type: "FeatureCollection",
+  features: [{
+    type: "Feature",
+    properties: {},
+    geometry: {
+      type: "Polygon",
+      coordinates: [
+        // Outer ring (world)
+        [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]],
+        // Hole: Continental US (clockwise)
+        [
+          [-67, 47.5], [-67.8, 44.5], [-70, 43.5], [-70, 41.5],
+          [-72, 41], [-74, 40.5], [-75.5, 39.5], [-75.5, 37.5],
+          [-76, 35], [-79, 33], [-81, 31], [-80.2, 25.8],
+          [-81.8, 24.5], [-82.5, 27.5], [-84, 29.5], [-85, 29.5],
+          [-88, 30.2], [-89.5, 29], [-93, 29.5], [-97, 26],
+          [-100, 28], [-104, 32], [-109, 31.5], [-111, 31.5],
+          [-114.5, 32.5], [-117.5, 32.5], [-118.5, 34], [-120.5, 34.5],
+          [-121, 36.5], [-122.5, 37.8], [-124, 40], [-124.5, 42],
+          [-124.5, 46], [-124.7, 48.5], [-123, 49],
+          [-117, 49], [-104, 49], [-97, 49], [-95.2, 49],
+          [-95, 49.4], [-89, 48], [-84.5, 46.5], [-82.5, 45],
+          [-82.5, 42.5], [-79, 42.5], [-79, 43.5], [-76.5, 44],
+          [-75, 45], [-73, 45], [-71, 45], [-67, 47.5]
+        ],
+        // Hole: Alaska (clockwise)
+        [
+          [-179.5, 51], [-179.5, 72], [-158, 72], [-141, 70],
+          [-130, 60], [-130, 55], [-135, 54], [-140, 53],
+          [-150, 52.5], [-165, 51], [-179.5, 51]
+        ],
+        // Hole: Hawaii (clockwise)
+        [
+          [-162, 18], [-154, 18], [-154, 23], [-162, 23], [-162, 18]
+        ]
+      ]
+    }
+  }]
+};
+
+// Add overlay + hot springs layers
+function addMapLayers() {
+  if (!map.getSource("non-us-overlay")) {
+    map.addSource("non-us-overlay", { type: "geojson", data: nonUsOverlay });
+    map.addLayer({
+      id: "non-us-overlay",
+      type: "fill",
+      source: "non-us-overlay",
+      paint: {
+        "fill-color": "#888",
+        "fill-opacity": 0.4,
+      },
+    });
+  }
+
   if (!geojsonData) return;
   if (map.getSource("hot-springs")) return;
 
@@ -143,21 +198,24 @@ function addHotSpringsLayer() {
   }
 }
 
-// Initial load: fetch GeoJSON then add layer (style is guaranteed ready)
+// Initial load
 map.on("load", function () {
+  // Add grey overlay immediately
+  addMapLayers();
+  // Then fetch hot springs data
   fetch("hot_springs.geojson")
     .then(function (r) { return r.json(); })
     .then(function (data) {
       geojsonData = data;
       allFeatures = data.features;
-      addHotSpringsLayer();
+      addMapLayers();
     });
 });
 
-// Re-add layer after style switch (Street <-> Satellite)
+// Re-add layers after style switch (Street <-> Satellite)
 map.on("styledata", function () {
-  if (geojsonData && !map.getSource("hot-springs")) {
-    try { addHotSpringsLayer(); } catch (e) { /* style not fully ready yet */ }
+  if (!map.getSource("non-us-overlay") || (geojsonData && !map.getSource("hot-springs"))) {
+    try { addMapLayers(); } catch (e) { /* style not fully ready yet */ }
   }
 });
 
