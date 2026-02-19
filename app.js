@@ -35,19 +35,26 @@ const map = new maplibregl.Map({
 // Navigation (zoom) control
 map.addControl(new maplibregl.NavigationControl(), "top-right");
 
-// Geolocation control — shows dot, does not zoom
-var geolocate = new maplibregl.GeolocateControl({
-  positionOptions: { enableHighAccuracy: true },
-  trackUserLocation: true,
-  showUserHeading: true,
-  fitBoundsOptions: { maxZoom: 0 },
-});
-map.addControl(geolocate, "top-left");
-
-// Auto-trigger location once map is idle (asks permission, shows dot without zooming)
-map.once("idle", function () {
-  geolocate.trigger();
-});
+// Show user location automatically (no button)
+var userLocMarker = null;
+if (navigator.geolocation) {
+  navigator.geolocation.watchPosition(
+    function (pos) {
+      var lngLat = [pos.coords.longitude, pos.coords.latitude];
+      if (userLocMarker) {
+        userLocMarker.setLngLat(lngLat);
+      } else {
+        var dot = document.createElement("div");
+        dot.className = "user-location-dot";
+        userLocMarker = new maplibregl.Marker({ element: dot })
+          .setLngLat(lngLat)
+          .addTo(map);
+      }
+    },
+    function () {},
+    { enableHighAccuracy: true }
+  );
+}
 
 // Layer switcher control
 class LayerSwitcher {
