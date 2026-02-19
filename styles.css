@@ -121,44 +121,45 @@ body {
 }
 .theme-switch {
   position: relative;
-  width: 64px;
-  height: 34px;
-  background: #222;
-  border-radius: 17px;
+  width: 52px;
+  height: 26px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 13px;
   cursor: pointer;
   user-select: none;
-  transition: background 0.3s;
+  transition: background 0.3s, border-color 0.3s;
 }
 .theme-switch-knob {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 28px;
-  height: 28px;
-  background: #fff;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
   border-radius: 50%;
   transition: transform 0.3s;
   z-index: 2;
 }
 body.dark .theme-switch-knob {
-  transform: translateX(30px);
+  transform: translateX(26px);
 }
 .theme-switch-icon {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.15rem;
+  font-size: 0.85rem;
   line-height: 1;
   transition: opacity 0.3s;
 }
 .theme-switch-sun {
-  right: 7px;
-  color: #f5a623;
+  right: 5px;
+  color: var(--text-faint);
   opacity: 1;
 }
 .theme-switch-moon {
-  left: 8px;
-  color: #c4c4e0;
+  left: 5px;
+  color: var(--text-faint);
   opacity: 0;
 }
 body.dark .theme-switch-sun {
