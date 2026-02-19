@@ -23,7 +23,8 @@
   --reset-hover: #999;
   --clear-color: #aaa;
   --map-shadow: rgba(0, 0, 0, 0.08);
-  --map-radius: 20px;
+  --radius: 10px;
+  --radius-sm: 6px;
 }
 
 body.dark {
@@ -90,17 +91,15 @@ body {
 .map-section {
   flex: 3;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   background: var(--map-bg);
+  padding: 6px;
 }
 #map {
   position: relative;
-  height: 90vh;
-  width: 95%;
-  max-width: 1200px;
-  margin: auto;
-  border-radius: var(--map-radius);
+  flex: 1;
+  border-radius: var(--radius);
   box-shadow: 0 4px 18px var(--map-shadow);
 }
 .search-section {
@@ -188,7 +187,7 @@ body.dark .theme-switch-moon {
   padding: 10px 36px 10px 14px;
   font-size: 1rem;
   border: 1px solid var(--input-border);
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: var(--input-bg);
   color: var(--text);
 }
@@ -215,7 +214,7 @@ body.dark .theme-switch-moon {
   padding: 10px 20px;
   font-size: 1rem;
   border: none;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: var(--accent);
   color: #fff;
   cursor: pointer;
@@ -233,7 +232,7 @@ body.dark .theme-switch-moon {
   min-height: 0;
   background-color: var(--results-bg);
   padding: 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 /* Highlight animation */
@@ -263,7 +262,7 @@ body.dark .theme-switch-moon {
   width: 240px;
   background: var(--legend-bg);
   border: 1px solid var(--legend-border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
   max-height: 400px;
   transition: max-height 0.3s ease;
@@ -325,7 +324,7 @@ body.dark .theme-switch-moon {
   background: var(--reset-bg);
   color: var(--reset-text);
   border: none;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -476,11 +475,11 @@ body.dark .github-link img {
     flex: 1;
     width: 100vw;
     max-width: 100vw;
+    padding: 4px;
   }
   #map {
-    width: 100vw;
-    height: 48vh;
-    max-width: 100vw;
+    width: 100%;
+    height: 100%;
   }
   .search-section {
     padding: 24px 12px;
