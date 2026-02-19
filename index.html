@@ -37,7 +37,11 @@
       </div>
       <aside class="search-section">
         <div class="theme-toggle-row">
-          <button id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">&#9790;</button>
+          <div id="theme-toggle" class="theme-switch" role="button" tabindex="0" title="Toggle dark mode" aria-label="Toggle dark mode">
+            <span class="theme-switch-knob"></span>
+            <span class="theme-switch-icon theme-switch-sun">&#9788;</span>
+            <span class="theme-switch-icon theme-switch-moon">&#9790;</span>
+          </div>
         </div>
         <label id="search-label" for="search">Search springs by name</label>
         <div class="search-row">

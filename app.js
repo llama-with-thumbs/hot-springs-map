@@ -1,18 +1,11 @@
 // Theme toggle
 (function () {
-  const saved = localStorage.getItem("theme");
-  if (saved === "dark") document.body.classList.add("dark");
+  if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
 })();
 document.getElementById("theme-toggle").addEventListener("click", function () {
   const isDark = document.body.classList.toggle("dark");
   localStorage.setItem("theme", isDark ? "dark" : "light");
-  this.innerHTML = isDark ? "&#9788;" : "&#9790;";
 });
-// Set initial icon
-(function () {
-  const btn = document.getElementById("theme-toggle");
-  btn.innerHTML = document.body.classList.contains("dark") ? "&#9788;" : "&#9790;";
-})();
 
 // 1) Define two base‐layers
 const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
