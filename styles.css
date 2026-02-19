@@ -406,17 +406,18 @@ body.dark .maplibregl-popup-tip {
 
 /* MapLibre controls */
 body.dark .maplibregl-ctrl-group {
-  background: #2a2a4a;
+  background: #111;
+  border-color: #555;
 }
 body.dark .maplibregl-ctrl-group button {
-  background: #2a2a4a;
-  color: #e0e0e0;
+  background: #111;
+  color: #fff;
 }
 body.dark .maplibregl-ctrl-group button + button {
-  border-top-color: #3a3a5c;
+  border-top-color: #444;
 }
 body.dark .maplibregl-ctrl-group button:hover {
-  background: #3a3a5c;
+  background: #333;
 }
 
 /* Layer switcher dark */

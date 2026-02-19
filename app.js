@@ -33,7 +33,7 @@ const map = new maplibregl.Map({
 });
 
 // Navigation (zoom) control
-map.addControl(new maplibregl.NavigationControl(), "top-right");
+map.addControl(new maplibregl.NavigationControl(), "top-left");
 
 // Show user location automatically (no button)
 var userLocMarker = null;
