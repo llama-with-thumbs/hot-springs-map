@@ -1,3 +1,19 @@
+// Theme toggle
+(function () {
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") document.body.classList.add("dark");
+})();
+document.getElementById("theme-toggle").addEventListener("click", function () {
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  this.innerHTML = isDark ? "&#9788;" : "&#9790;";
+});
+// Set initial icon
+(function () {
+  const btn = document.getElementById("theme-toggle");
+  btn.innerHTML = document.body.classList.contains("dark") ? "&#9788;" : "&#9790;";
+})();
+
 // 1) Define two base‐layers
 const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors",
@@ -67,11 +83,11 @@ function doSearch() {
       resultsHtml += `
         <li style="margin-bottom:16px;">
           <a href="#"
-             style="font-weight:600;font-size:1.05em;color:#255bbd;text-decoration:none;"
+             style="font-weight:600;font-size:1.05em;color:var(--link-color);text-decoration:none;"
              onclick="focusSpring(${marker._leaflet_id});return false;">
             ${props["Spring Name"] || "Hot Spring"}
           </a>
-          <div style="font-size:0.9em;color:#444;margin-top:4px;">
+          <div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">
       `;
       Object.entries(props).forEach(([key, val]) => {
         if (key === "Spring Name") return;
@@ -82,7 +98,7 @@ function doSearch() {
     });
     resultsHtml += "</ul>";
     if (matches.length > 5) {
-      resultsHtml += `<div style="font-size:0.85em;color:#666;margin-top:8px;">
+      resultsHtml += `<div style="font-size:0.85em;color:var(--text-faint);margin-top:8px;">
                         + ${matches.length - 5} more results
                       </div>`;
     }
