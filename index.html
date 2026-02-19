@@ -5,7 +5,7 @@
     <title>Hot Spring Finder</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="styles.css" />
     <!-- jQuery (required by Ion.RangeSlider) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -16,22 +16,17 @@
   <body>
     <div class="container">
       <div class="map-section">
-        <div id="map">
-          <div id="legend" class="map-legend collapsed">
-            <div class="legend-header">
-              <span class="legend-title">Legend</span>
-              <span id="legend-toggle" class="legend-toggle">▶</span>
-            </div>
-            <div class="legend-content">
-              <!-- <div><b>SC</b>: State Code</div> -->
-              <div><b>TF</b>: Max surface temp (°F; B=boiling, H=hot, W=warm)</div>
-              <div><b>TC</b>: Max surface temp (°C; B=boiling, H=hot, W=warm)</div>
-              <!-- <div><b>P.P. 492</b>: USGS Prof. Paper 492 (Waring, 1965)</div> -->
-              <!-- <div><b>Circ. 790</b>: USGS Circular 790 (Muffler, 1979)</div> -->
-              <!-- <div><b>NOAA</b>: NOAA KGRD 12 overlays (1980)</div> -->
-              <div><b>AMS</b>: 1:250,000 AMS Maps</div>
-              <div><b>USGS quadrangle</b>: 15‑ or 7.5‑minute quad</div>
-            </div>
+        <div id="map"></div>
+        <div id="legend" class="map-legend collapsed">
+          <div class="legend-header">
+            <span class="legend-title">Legend</span>
+            <span id="legend-toggle" class="legend-toggle">&#9654;</span>
+          </div>
+          <div class="legend-content">
+            <div><b>TF</b>: Max surface temp (&deg;F; B=boiling, H=hot, W=warm)</div>
+            <div><b>TC</b>: Max surface temp (&deg;C; B=boiling, H=hot, W=warm)</div>
+            <div><b>AMS</b>: 1:250,000 AMS Maps</div>
+            <div><b>USGS quadrangle</b>: 15&#8209; or 7.5&#8209;minute quad</div>
           </div>
         </div>
       </div>
@@ -46,7 +41,7 @@
         <label id="search-label" for="search">Search springs by name</label>
         <div class="search-row">
           <input id="search" type="text" placeholder="Type a spring name…" autocomplete="off" />
-          <button id="search-clear" title="Clear search" tabindex="-1">×</button>
+          <button id="search-clear" title="Clear search" tabindex="-1">&times;</button>
           <button id="search-btn" type="button">Search</button>
         </div>
         <div id="search-results"></div>
@@ -56,8 +51,8 @@
           </div>
           <div class="unit-codes-row">
             <div class="unit-selector">
-              <label><input type="radio" name="temp-unit" value="TF" checked /> °F</label>
-              <label><input type="radio" name="temp-unit" value="TC" /> °C</label>
+              <label><input type="radio" name="temp-unit" value="TF" checked /> &deg;F</label>
+              <label><input type="radio" name="temp-unit" value="TC" /> &deg;C</label>
             </div>
             <div class="codes-selector">
               <label><input type="checkbox" name="temp-code" value="W" checked /> Warm</label>
@@ -87,7 +82,7 @@
         </div>
       </aside>
     </div>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

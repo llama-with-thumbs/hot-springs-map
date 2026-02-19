@@ -90,6 +90,7 @@ body {
 }
 .map-section {
   flex: 3;
+  position: relative;
   display: flex;
   align-items: stretch;
   justify-content: stretch;
@@ -97,10 +98,10 @@ body {
   padding: 6px;
 }
 #map {
-  position: relative;
   flex: 1;
   border-radius: var(--radius);
   box-shadow: 0 4px 18px var(--map-shadow);
+  overflow: hidden;
 }
 .search-section {
   flex: 1;
@@ -235,30 +236,11 @@ body.dark .theme-switch-moon {
   border-radius: var(--radius-sm);
 }
 
-/* Highlight animation */
-.highlight-marker {
-  animation: bounce 0.6s;
-  filter: drop-shadow(0 0 7px #fc0);
-}
-@keyframes bounce {
-  0%,
-  50%,
-  100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-18px);
-  }
-  70% {
-    transform: translateY(-8px);
-  }
-}
-
 /* Legend */
 .map-legend {
   position: absolute;
-  bottom: 18px;
-  left: 18px;
+  bottom: 24px;
+  left: 24px;
   width: 240px;
   background: var(--legend-bg);
   border: 1px solid var(--legend-border);
@@ -266,7 +248,7 @@ body.dark .theme-switch-moon {
   overflow: hidden;
   max-height: 400px;
   transition: max-height 0.3s ease;
-  z-index: 1200;
+  z-index: 2;
 }
 .map-legend.collapsed {
   max-height: 36px;
@@ -304,7 +286,6 @@ body.dark .theme-switch-moon {
   font-size: 1em;
   color: var(--text-muted);
 }
-/* First row: F/C + W/H/B */
 .unit-codes-row {
   display: flex;
   font-size: 0.8rem;
@@ -333,7 +314,6 @@ body.dark .theme-switch-moon {
   background: var(--reset-hover);
 }
 
-/* Second row: slider & reset on one line */
 .slider-reset-row {
   display: flex;
   align-items: center;
@@ -344,12 +324,10 @@ body.dark .theme-switch-moon {
   flex: 1;
 }
 
-/* Reset button styling inherited from #temp-reset-btn */
 .actions {
   flex-shrink: 0;
 }
 
-/* Range label underneath */
 .slider-label {
   font-size: 0.9em;
   margin-bottom: 12px;
@@ -375,66 +353,76 @@ body.dark .theme-switch-moon {
   margin-right: 6px;
 }
 
-/* Locate button */
-.locate-btn {
-  width: 34px;
-  height: 34px;
-  line-height: 34px;
-  text-align: center;
-  font-size: 1.4rem;
+/* Layer switcher */
+.layer-switcher {
+  display: flex;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+.layer-btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  border: none;
   cursor: pointer;
   background: #fff;
   color: #333;
+  transition: background 0.2s, color 0.2s;
 }
-.locate-btn:hover {
-  background: #f4f4f4;
+.layer-btn.active {
+  background: var(--accent);
+  color: #fff;
 }
-body.dark .locate-btn {
-  background: #2a2a4a;
-  color: #e0e0e0;
-}
-body.dark .locate-btn:hover {
-  background: #3a3a5c;
-}
-
-/* User location pulse */
-.user-loc-pulse {
-  animation: loc-pulse 1.5s ease-out infinite;
-}
-@keyframes loc-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(42, 127, 255, 0.5); }
-  100% { box-shadow: 0 0 0 12px rgba(42, 127, 255, 0); }
+.layer-btn:not(.active):hover {
+  background: #eee;
 }
 
 /* Dark theme overrides for third-party components */
 
-/* Leaflet popups */
-body.dark .leaflet-popup-content-wrapper {
+/* MapLibre popups */
+body.dark .maplibregl-popup-content {
   background: #2a2a4a;
   color: #e0e0e0;
 }
-body.dark .leaflet-popup-tip {
-  background: #2a2a4a;
+body.dark .maplibregl-popup-tip {
+  border-top-color: #2a2a4a;
 }
 
-/* Leaflet layer control */
-body.dark .leaflet-control-layers {
+/* MapLibre controls */
+body.dark .maplibregl-ctrl-group {
+  background: #2a2a4a;
+}
+body.dark .maplibregl-ctrl-group button {
   background: #2a2a4a;
   color: #e0e0e0;
-  border-color: #3a3a5c;
 }
-body.dark .leaflet-control-layers-separator {
+body.dark .maplibregl-ctrl-group button + button {
   border-top-color: #3a3a5c;
 }
+body.dark .maplibregl-ctrl-group button:hover {
+  background: #3a3a5c;
+}
 
-/* Leaflet zoom control */
-body.dark .leaflet-control-zoom a {
+/* Layer switcher dark */
+body.dark .layer-btn {
   background: #2a2a4a;
   color: #e0e0e0;
-  border-color: #3a3a5c;
 }
-body.dark .leaflet-control-zoom a:hover {
+body.dark .layer-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+body.dark .layer-btn:not(.active):hover {
   background: #3a3a5c;
+}
+
+/* MapLibre attribution */
+body.dark .maplibregl-ctrl-attrib {
+  background: rgba(26, 26, 46, 0.8);
+  color: #888;
+}
+body.dark .maplibregl-ctrl-attrib a {
+  color: #6d9aff;
 }
 
 /* Ion.RangeSlider */
@@ -485,10 +473,10 @@ body.dark .github-link img {
     padding: 24px 12px;
   }
   .map-legend {
-    position: static;
-    margin: 10px auto 0;
-    max-width: 99vw;
-    font-size: 0.93em;
+    bottom: 12px;
+    left: 12px;
+    width: 200px;
+    font-size: 0.9em;
   }
   .search-row {
     gap: 8px;
