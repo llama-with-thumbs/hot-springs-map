@@ -7,12 +7,13 @@ document.getElementById("theme-toggle").addEventListener("click", function () {
   localStorage.setItem("theme", isDark ? "dark" : "light");
 });
 
-// 1) Define two base‐layers
-const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors",
-});
+// 1) Define base layers
+const streetLayer = L.tileLayer(
+  "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+  { attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' }
+);
 const satelliteLayer = L.tileLayer(
-  "https://server.arcgisonline.com/ArcGIS/rest/services/" + "World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   { attribution: "Tiles &copy; Esri &mdash; Source: Esri, NASA, USGS" }
 );
 
