@@ -216,39 +216,50 @@ map.on("styledata", function () {
   }
 });
 
-// Clear hover helper
-function clearHover() {
+// Hover + click state
+var hoveredId = null;
+
+// Hover: show popup + white circle
+map.on("mousemove", "hot-springs", function (e) {
+  map.getCanvas().style.cursor = "pointer";
+  if (!e.features.length) return;
+  var feature = e.features[0];
+
+  // Update white circle highlight
+  if (hoveredId !== null && hoveredId !== feature.id) {
+    map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
+  }
+  hoveredId = feature.id;
+  map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: true });
+
+  // Show popup
+  var props = feature.properties;
+  var coords = feature.geometry.coordinates.slice();
+  if (currentPopup) currentPopup.remove();
+  currentPopup = new maplibregl.Popup({ closeButton: false, closeOnClick: false })
+    .setLngLat(coords)
+    .setHTML(buildPopupHTML(props))
+    .addTo(map);
+});
+
+// Mouse leave: remove popup + white circle
+map.on("mouseleave", "hot-springs", function () {
+  map.getCanvas().style.cursor = "";
   if (hoveredId !== null) {
     map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
     hoveredId = null;
   }
-  hoverLocked = true;
-  map.getCanvas().style.cursor = "";
-}
-
-// Clear hover on any map click
-map.on("click", function () {
-  clearHover();
+  if (currentPopup) {
+    currentPopup.remove();
+    currentPopup = null;
+  }
 });
 
-// Click on spring -> popup
+// Click on spring -> show info in sidebar
 map.on("click", "hot-springs", function (e) {
   if (!e.features || !e.features.length) return;
   var props = e.features[0].properties;
 
-  if (currentPopup) currentPopup.remove();
-  currentPopup = new maplibregl.Popup()
-    .setLngLat(e.lngLat)
-    .setHTML(buildPopupHTML(props))
-    .addTo(map);
-
-  // Clear hover when popup closes
-  currentPopup.on("close", function () {
-    clearHover();
-    hoverLocked = false;
-  });
-
-  // Show info in sidebar
   var resultsDiv = document.getElementById("search-results");
   var html = "<ul style='list-style:none;padding:0;margin:0;'>" +
     '<li style="margin-bottom:16px;">' +
@@ -267,29 +278,6 @@ map.on("click", "hot-springs", function (e) {
   });
   html += "</div></li></ul>";
   resultsDiv.innerHTML = html;
-});
-
-// Hover effect
-var hoveredId = null;
-var hoverLocked = false;
-map.on("mousemove", "hot-springs", function (e) {
-  if (hoverLocked) return;
-  map.getCanvas().style.cursor = "pointer";
-  if (e.features.length > 0) {
-    if (hoveredId !== null) {
-      map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
-    }
-    hoveredId = e.features[0].id;
-    map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: true });
-  }
-});
-map.on("mouseleave", "hot-springs", function () {
-  map.getCanvas().style.cursor = "";
-  hoverLocked = false;
-  if (hoveredId !== null) {
-    map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
-    hoveredId = null;
-  }
 });
 
 // === Filter helpers ===
