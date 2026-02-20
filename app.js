@@ -216,23 +216,37 @@ map.on("styledata", function () {
   }
 });
 
-// Click on spring -> popup
-map.on("click", "hot-springs", function (e) {
-  if (!e.features || !e.features.length) return;
-  var props = e.features[0].properties;
-
-  // Clear hover effect and lock it until mouse leaves the feature
+// Clear hover helper
+function clearHover() {
   if (hoveredId !== null) {
     map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
     hoveredId = null;
   }
   hoverLocked = true;
+  map.getCanvas().style.cursor = "";
+}
+
+// Clear hover on any map click
+map.on("click", function () {
+  clearHover();
+});
+
+// Click on spring -> popup
+map.on("click", "hot-springs", function (e) {
+  if (!e.features || !e.features.length) return;
+  var props = e.features[0].properties;
 
   if (currentPopup) currentPopup.remove();
   currentPopup = new maplibregl.Popup()
     .setLngLat(e.lngLat)
     .setHTML(buildPopupHTML(props))
     .addTo(map);
+
+  // Clear hover when popup closes
+  currentPopup.on("close", function () {
+    clearHover();
+    hoverLocked = false;
+  });
 
   // Show info in sidebar
   var resultsDiv = document.getElementById("search-results");
