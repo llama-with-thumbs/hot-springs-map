@@ -257,7 +257,7 @@ map.on("click", "hot-springs", function (e) {
     "</span>" +
     '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
   Object.entries(props).forEach(function ([key, val]) {
-    if (key === "Spring Name" || excludeKeys.includes(key)) return;
+    if (key === "Spring Name") return;
     var display = val && val !== "null" ? val : "No data";
     var label = labelMap[key] || key;
     if (key === "SC" && display !== "No data") {
@@ -352,7 +352,7 @@ function doSearch() {
         "</a>" +
         '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
       Object.entries(props).forEach(function ([key, val]) {
-        if (key === "Spring Name" || excludeKeys.includes(key)) return;
+        if (key === "Spring Name") return;
         var display = val && val !== "null" ? val : "No data";
         var label = labelMap[key] || key;
         if (key === "SC" && display !== "No data") {
