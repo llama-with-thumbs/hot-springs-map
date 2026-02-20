@@ -278,6 +278,7 @@ map.on("click", "hot-springs", function (e) {
   map.setFeatureState({ source: "hot-springs", id: selectedId }, { hover: true });
 
   var resultsDiv = document.getElementById("search-results");
+  var coords = feature.geometry.coordinates;
   var html = "<ul style='list-style:none;padding:0;margin:0;'>" +
     '<li style="margin-bottom:16px;">' +
     '<span style="font-weight:600;font-size:1.05em;color:var(--link-color);">' +
@@ -286,13 +287,13 @@ map.on("click", "hot-springs", function (e) {
     '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
   Object.entries(props).forEach(function ([key, val]) {
     if (key === "Spring Name") return;
-    var display = val && val !== "null" ? val : "No data";
+    if (!val || val === "null" || val === "") return;
     var label = labelMap[key] || key;
-    if (key === "SC" && display !== "No data") {
-      display = stateNames[display] || display;
-    }
+    var display = val;
+    if (key === "SC") display = stateNames[val] || val;
     html += "<div><b>" + label + ":</b> " + display + "</div>";
   });
+  html += "<div><b>Coordinates:</b> " + coords[1].toFixed(4) + ", " + coords[0].toFixed(4) + "</div>";
   html += "</div></li></ul>";
   resultsDiv.innerHTML = html;
 });
@@ -358,13 +359,13 @@ function doSearch() {
         '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
       Object.entries(props).forEach(function ([key, val]) {
         if (key === "Spring Name") return;
-        var display = val && val !== "null" ? val : "No data";
+        if (!val || val === "null" || val === "") return;
         var label = labelMap[key] || key;
-        if (key === "SC" && display !== "No data") {
-          display = stateNames[display] || display;
-        }
+        var display = val;
+        if (key === "SC") display = stateNames[val] || val;
         resultsHtml += "<div><b>" + label + ":</b> " + display + "</div>";
       });
+      resultsHtml += "<div><b>Coordinates:</b> " + coord[1].toFixed(4) + ", " + coord[0].toFixed(4) + "</div>";
       resultsHtml += "</div></li>";
     });
     resultsHtml += "</ul>";
