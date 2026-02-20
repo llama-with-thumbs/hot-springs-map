@@ -221,11 +221,12 @@ map.on("click", "hot-springs", function (e) {
   if (!e.features || !e.features.length) return;
   var props = e.features[0].properties;
 
-  // Clear hover effect
+  // Clear hover effect and lock it until mouse leaves the feature
   if (hoveredId !== null) {
     map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
     hoveredId = null;
   }
+  hoverLocked = true;
 
   if (currentPopup) currentPopup.remove();
   currentPopup = new maplibregl.Popup()
@@ -256,7 +257,9 @@ map.on("click", "hot-springs", function (e) {
 
 // Hover effect
 var hoveredId = null;
+var hoverLocked = false;
 map.on("mousemove", "hot-springs", function (e) {
+  if (hoverLocked) return;
   map.getCanvas().style.cursor = "pointer";
   if (e.features.length > 0) {
     if (hoveredId !== null) {
@@ -268,6 +271,7 @@ map.on("mousemove", "hot-springs", function (e) {
 });
 map.on("mouseleave", "hot-springs", function () {
   map.getCanvas().style.cursor = "";
+  hoverLocked = false;
   if (hoveredId !== null) {
     map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
     hoveredId = null;
