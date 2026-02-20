@@ -218,6 +218,7 @@ map.on("styledata", function () {
 
 // Hover + click state
 var hoveredId = null;
+var selectedId = null;
 
 // Hover: show popup + white circle
 map.on("mousemove", "hot-springs", function (e) {
@@ -225,8 +226,8 @@ map.on("mousemove", "hot-springs", function (e) {
   if (!e.features.length) return;
   var feature = e.features[0];
 
-  // Update white circle highlight
-  if (hoveredId !== null && hoveredId !== feature.id) {
+  // Update white circle highlight (don't clear selected)
+  if (hoveredId !== null && hoveredId !== feature.id && hoveredId !== selectedId) {
     map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
   }
   hoveredId = feature.id;
@@ -242,23 +243,39 @@ map.on("mousemove", "hot-springs", function (e) {
     .addTo(map);
 });
 
-// Mouse leave: remove popup + white circle
+// Mouse leave: remove popup + white circle (keep selected)
 map.on("mouseleave", "hot-springs", function () {
   map.getCanvas().style.cursor = "";
-  if (hoveredId !== null) {
+  if (hoveredId !== null && hoveredId !== selectedId) {
     map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
-    hoveredId = null;
   }
+  hoveredId = null;
   if (currentPopup) {
     currentPopup.remove();
     currentPopup = null;
   }
 });
 
-// Click on spring -> show info in sidebar
+// Click anywhere on map: clear selected
+map.on("click", function () {
+  if (selectedId !== null) {
+    map.setFeatureState({ source: "hot-springs", id: selectedId }, { hover: false });
+    selectedId = null;
+  }
+});
+
+// Click on spring -> stick white circle + show info in sidebar
 map.on("click", "hot-springs", function (e) {
   if (!e.features || !e.features.length) return;
-  var props = e.features[0].properties;
+  var feature = e.features[0];
+  var props = feature.properties;
+
+  // Clear previous selection
+  if (selectedId !== null && selectedId !== feature.id) {
+    map.setFeatureState({ source: "hot-springs", id: selectedId }, { hover: false });
+  }
+  selectedId = feature.id;
+  map.setFeatureState({ source: "hot-springs", id: selectedId }, { hover: true });
 
   var resultsDiv = document.getElementById("search-results");
   var html = "<ul style='list-style:none;padding:0;margin:0;'>" +
