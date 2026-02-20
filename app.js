@@ -149,6 +149,7 @@ function addMapLayers() {
       "circle-radius": 5,
       "circle-color": [
         "case",
+        ["any", ["!", ["has", "TF"]], ["==", ["get", "TF"], null], ["==", ["get", "TF"], "null"], ["==", ["get", "TF"], ""]], "#4caf50",
         ["==", ["get", "TF"], "W"], "#67a9cf",
         ["==", ["get", "TF"], "H"], "#ef8a62",
         ["==", ["get", "TF"], "B"], "#b2182b",
