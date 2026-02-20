@@ -221,6 +221,12 @@ map.on("click", "hot-springs", function (e) {
   if (!e.features || !e.features.length) return;
   var props = e.features[0].properties;
 
+  // Clear hover effect
+  if (hoveredId !== null) {
+    map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
+    hoveredId = null;
+  }
+
   if (currentPopup) currentPopup.remove();
   currentPopup = new maplibregl.Popup()
     .setLngLat(e.lngLat)
@@ -316,7 +322,7 @@ function doSearch() {
 
     // Build sidebar results
     resultsHtml = "<ul style='list-style:none;padding:0;margin:0;'>";
-    matches.slice(0, 5).forEach(function (feature) {
+    matches.forEach(function (feature) {
       var props = feature.properties;
       var coord = feature.geometry.coordinates;
       resultsHtml +=
@@ -339,11 +345,6 @@ function doSearch() {
       resultsHtml += "</div></li>";
     });
     resultsHtml += "</ul>";
-    if (matches.length > 5) {
-      resultsHtml +=
-        '<div style="font-size:0.85em;color:var(--text-faint);margin-top:8px;">' +
-        "+ " + (matches.length - 5) + " more results</div>";
-    }
   }
 
   resultsDiv.innerHTML = resultsHtml;
