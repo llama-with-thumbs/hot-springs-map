@@ -131,8 +131,8 @@ function addMapLayers() {
       type: "fill",
       source: "non-us-overlay",
       paint: {
-        "fill-color": "#888",
-        "fill-opacity": 0.4,
+        "fill-color": "#ccc",
+        "fill-opacity": 0.6,
       },
     });
   }
