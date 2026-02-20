@@ -116,8 +116,13 @@ const stateNames = {
   WA: "Washington", WV: "West Virginia", WY: "Wyoming",
 };
 
+function springName(props) {
+  var n = props["Spring Name"];
+  return n && n !== "null" && n.trim() !== "" ? n : "Anonymous Hot Spring";
+}
+
 function buildPopupHTML(props) {
-  let html = "<strong>" + (props["Spring Name"] || "Anonymous Hot Spring") + "</strong>";
+  let html = "<strong>" + springName(props) + "</strong>";
   Object.entries(props).forEach(function ([key, raw]) {
     if (key === "Spring Name" || excludeKeys.includes(key)) return;
     var val = raw && raw !== "null" ? raw : "Information not available";
@@ -227,7 +232,7 @@ map.on("click", "hot-springs", function (e) {
   var html = "<ul style='list-style:none;padding:0;margin:0;'>" +
     '<li style="margin-bottom:16px;">' +
     '<span style="font-weight:600;font-size:1.05em;color:var(--link-color);">' +
-    (props["Spring Name"] || "Anonymous Hot Spring") +
+    (springName(props)) +
     "</span>" +
     '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
   Object.entries(props).forEach(function ([key, val]) {
@@ -319,7 +324,7 @@ function doSearch() {
         '<a href="#"' +
         ' style="font-weight:600;font-size:1.05em;color:var(--link-color);text-decoration:none;"' +
         ' onclick="focusSpring(' + coord[0] + "," + coord[1] + ');return false;">' +
-        (props["Spring Name"] || "Anonymous Hot Spring") +
+        (springName(props)) +
         "</a>" +
         '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
       Object.entries(props).forEach(function ([key, val]) {
