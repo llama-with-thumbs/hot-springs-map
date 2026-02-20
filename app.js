@@ -118,7 +118,7 @@ const stateNames = {
 
 function springName(props) {
   var n = props["Spring Name"];
-  return n && n !== "null" && n.trim() !== "" ? n : "Anonymous Hot Spring";
+  return n && n !== "null" && n.trim() !== "" ? n : "Hot Spring";
 }
 
 function buildPopupHTML(props) {
