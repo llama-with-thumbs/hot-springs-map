@@ -140,13 +140,15 @@ function addMapLayers() {
   if (!geojsonData) return;
   if (map.getSource("hot-springs")) return;
 
-  map.addSource("hot-springs", { type: "geojson", data: geojsonData });
+  map.addSource("hot-springs", { type: "geojson", data: geojsonData, generateId: true });
   map.addLayer({
     id: "hot-springs",
     type: "circle",
     source: "hot-springs",
     paint: {
-      "circle-radius": 5,
+      "circle-radius": [
+        "case", ["boolean", ["feature-state", "hover"], false], 8, 5
+      ],
       "circle-color": [
         "case",
         ["any", ["!", ["has", "TF"]], ["==", ["get", "TF"], null], ["==", ["get", "TF"], "null"], ["==", ["get", "TF"], ""]], "#4caf50",
@@ -163,8 +165,12 @@ function addMapLayers() {
           200, "#b2182b"
         ]
       ],
-      "circle-stroke-color": "rgba(0,0,0,0.25)",
-      "circle-stroke-width": 1,
+      "circle-stroke-color": [
+        "case", ["boolean", ["feature-state", "hover"], false], "#fff", "rgba(0,0,0,0.25)"
+      ],
+      "circle-stroke-width": [
+        "case", ["boolean", ["feature-state", "hover"], false], 2, 1
+      ],
       "circle-opacity": 0.9,
     },
   });
@@ -206,12 +212,24 @@ map.on("click", "hot-springs", function (e) {
     .addTo(map);
 });
 
-// Cursor pointer on hover
-map.on("mouseenter", "hot-springs", function () {
+// Hover effect
+var hoveredId = null;
+map.on("mousemove", "hot-springs", function (e) {
   map.getCanvas().style.cursor = "pointer";
+  if (e.features.length > 0) {
+    if (hoveredId !== null) {
+      map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
+    }
+    hoveredId = e.features[0].id;
+    map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: true });
+  }
 });
 map.on("mouseleave", "hot-springs", function () {
   map.getCanvas().style.cursor = "";
+  if (hoveredId !== null) {
+    map.setFeatureState({ source: "hot-springs", id: hoveredId }, { hover: false });
+    hoveredId = null;
+  }
 });
 
 // === Filter helpers ===
