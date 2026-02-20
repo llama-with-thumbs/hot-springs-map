@@ -147,10 +147,24 @@ function addMapLayers() {
     source: "hot-springs",
     paint: {
       "circle-radius": 5,
-      "circle-color": "#e03426",
-      "circle-stroke-color": "#56130e",
+      "circle-color": [
+        "case",
+        ["==", ["get", "TF"], "W"], "#67a9cf",
+        ["==", ["get", "TF"], "H"], "#ef8a62",
+        ["==", ["get", "TF"], "B"], "#b2182b",
+        [
+          "interpolate", ["linear"],
+          ["to-number", ["get", "TF"], 100],
+          50, "#2166ac",
+          90, "#67a9cf",
+          120, "#f7f7f7",
+          150, "#ef8a62",
+          200, "#b2182b"
+        ]
+      ],
+      "circle-stroke-color": "rgba(0,0,0,0.25)",
       "circle-stroke-width": 1,
-      "circle-opacity": 0.95,
+      "circle-opacity": 0.9,
     },
   });
 
