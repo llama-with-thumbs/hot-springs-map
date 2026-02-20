@@ -106,7 +106,15 @@ const labelMap = {
   TF: "Temperature (\u00b0F)",
   TC: "Temperature (\u00b0C)",
 };
-const excludeKeys = ["P.P. 492", "Circ. 790", "NOAA  "];
+const excludeKeys = ["P.P. 492", "Circ. 790", "NOAA  ", "AMS", "USGS Quadrangle"];
+const stateNames = {
+  AK: "Alaska", AR: "Arkansas", AZ: "Arizona", CA: "California",
+  CO: "Colorado", FL: "Florida", GA: "Georgia", HI: "Hawaii",
+  ID: "Idaho", MA: "Massachusetts", MT: "Montana", NC: "North Carolina",
+  NM: "New Mexico", NV: "Nevada", NY: "New York", OR: "Oregon",
+  SD: "South Dakota", TX: "Texas", UT: "Utah", VA: "Virginia",
+  WA: "Washington", WV: "West Virginia", WY: "Wyoming",
+};
 
 function buildPopupHTML(props) {
   let html = "<strong>" + (props["Spring Name"] || "Anonymous Hot Spring") + "</strong>";
@@ -114,6 +122,9 @@ function buildPopupHTML(props) {
     if (key === "Spring Name" || excludeKeys.includes(key)) return;
     var val = raw && raw !== "null" ? raw : "Information not available";
     var label = labelMap[key] || key;
+    if (key === "SC" && val !== "Information not available") {
+      val = stateNames[val] || val;
+    }
     html += "<br><b>" + label + ":</b> " + val;
   });
   return html;
@@ -223,6 +234,9 @@ map.on("click", "hot-springs", function (e) {
     if (key === "Spring Name" || excludeKeys.includes(key)) return;
     var display = val && val !== "null" ? val : "No data";
     var label = labelMap[key] || key;
+    if (key === "SC" && display !== "No data") {
+      display = stateNames[display] || display;
+    }
     html += "<div><b>" + label + ":</b> " + display + "</div>";
   });
   html += "</div></li></ul>";
@@ -309,9 +323,13 @@ function doSearch() {
         "</a>" +
         '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
       Object.entries(props).forEach(function ([key, val]) {
-        if (key === "Spring Name") return;
+        if (key === "Spring Name" || excludeKeys.includes(key)) return;
         var display = val && val !== "null" ? val : "No data";
-        resultsHtml += "<div><b>" + key + ":</b> " + display + "</div>";
+        var label = labelMap[key] || key;
+        if (key === "SC" && display !== "No data") {
+          display = stateNames[display] || display;
+        }
+        resultsHtml += "<div><b>" + label + ":</b> " + display + "</div>";
       });
       resultsHtml += "</div></li>";
     });
