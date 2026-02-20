@@ -210,6 +210,23 @@ map.on("click", "hot-springs", function (e) {
     .setLngLat(e.lngLat)
     .setHTML(buildPopupHTML(props))
     .addTo(map);
+
+  // Show info in sidebar
+  var resultsDiv = document.getElementById("search-results");
+  var html = "<ul style='list-style:none;padding:0;margin:0;'>" +
+    '<li style="margin-bottom:16px;">' +
+    '<span style="font-weight:600;font-size:1.05em;color:var(--link-color);">' +
+    (props["Spring Name"] || "Hot Spring") +
+    "</span>" +
+    '<div style="font-size:0.9em;color:var(--text-muted);margin-top:4px;">';
+  Object.entries(props).forEach(function ([key, val]) {
+    if (key === "Spring Name" || excludeKeys.includes(key)) return;
+    var display = val && val !== "null" ? val : "No data";
+    var label = labelMap[key] || key;
+    html += "<div><b>" + label + ":</b> " + display + "</div>";
+  });
+  html += "</div></li></ul>";
+  resultsDiv.innerHTML = html;
 });
 
 // Hover effect
